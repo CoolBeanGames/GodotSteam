@@ -1,49 +1,50 @@
-//================================================================================================//
-// GodotSteam - godotsteam_multiplayer_peer.h
-//================================================================================================//
-//
-// Copyright (c) 2017-Current | Chris Ridenour, Ryan Leverenz, GP Garcia, and Contributors
-//
-// View all contributors at https://godotsteam.com/contribute/contributors/
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//
-//================================================================================================//
+/***************************************************************************/
+/*  godotsteam_multiplayer_peer.h                                          */
+/***************************************************************************/
+/*                         This file is part of:                           */
+/*                              GODOTSTEAM                                 */
+/*                         https://godotsteam.com                          */
+/***************************************************************************/
+/* Copyright (c) 2015-Current | GP Garcia and Contributors                 */
+/*                                                                         */
+/* View all contributors at https://godotsteam.com/contribute/contributors */
+/*                                                                         */
+/* Permission is hereby granted, free of charge, to any person obtaining   */
+/* a copy of this software and associated documentation files (the         */
+/* "Software"), to deal in the Software without restriction, including     */
+/* without limitation the rights to use, copy, modify, merge, publish,     */
+/* distribute, sublicense, and/or sell copies of the Software, and to      */
+/* permit persons to whom the Software is furnished to do so, subject to   */
+/* the following conditions:                                               */
+/*                                                                         */
+/* The above copyright notice and this permission notice shall be included */
+/* in all copies or substantial portions of the Software.                  */
+/*                                                                         */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,         */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF      */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY    */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,    */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE       */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                  */
+/***************************************************************************/
 
-
-#ifndef GODOTSTEAM_MULTIPLAYER_PEER_H
-#define GODOTSTEAM_MULTIPLAYER_PEER_H
-
+#pragma once
 
 #ifdef GDEXTENSION
-#include <godot_cpp/classes/multiplayer_peer_extension.hpp>
 #include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/classes/multiplayer_peer_extension.hpp>
 #include <godot_cpp/classes/os.hpp>
-#include <godot_cpp/core/ext_wrappers.gen.inc>
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/local_vector.hpp>
+
+#include <godot_cpp/core/ext_wrappers.gen.inc>
 using namespace godot;
 #else
 // Include Godot headers
 #include "core/extension/ext_wrappers.gen.inc"
-#include "core/os/os.h"
 #include "core/object/class_db.h"
+#include "core/os/os.h"
 #include "core/templates/hash_map.h"
 #include "scene/main/multiplayer_peer.h"
 #endif
@@ -59,14 +60,12 @@ class SteamMultiplayerPeer : public MultiplayerPeer {
 	GDCLASS(SteamMultiplayerPeer, MultiplayerPeer);
 #endif
 
-
 public:
 	enum DebugLevel {
 		DEBUG_LEVEL_NONE,
 		DEBUG_LEVEL_PEER,
 		DEBUG_LEVEL_STEAM,
 	};
-
 
 private:
 	HashMap<uint32_t, Ref<SteamPacketPeer>> peers;
@@ -95,14 +94,11 @@ private:
 
 	STEAM_CALLBACK(SteamMultiplayerPeer, network_connection_status_changed,
 			SteamNetConnectionStatusChangedCallback_t,
-			callback_network_connection_status_changed
-			);
+			callback_network_connection_status_changed);
 
 	// LobbyChatUpdate_t
 	STEAM_CALLBACK(SteamMultiplayerPeer, lobby_chat_update, LobbyChatUpdate_t,
-			callback_lobby_chat_update
-			);
-
+			callback_lobby_chat_update);
 
 public:
 	SteamMultiplayerPeer();
@@ -167,7 +163,6 @@ public:
 	void set_debug_level(DebugLevel p_debug_level);
 	DebugLevel get_debug_level() const;
 
-
 protected:
 	static void _bind_methods();
 
@@ -175,13 +170,8 @@ protected:
 	Error _create_listen_socket(int p_virtual_port);
 	Error _create_poll_group();
 	void _add_pending_peer(uint64_t p_steam_id, HSteamNetConnection p_connection_handle,
-			SteamPacketPeer::PeerState p_peer_state
-			);
+			SteamPacketPeer::PeerState p_peer_state);
 	void upgrade_peer(HSteamNetConnection p_connection_handle);
 };
 
-
 VARIANT_ENUM_CAST(SteamMultiplayerPeer::DebugLevel)
-
-
-#endif // GODOTSTEAM_MULTIPLAYER_PEER_H
