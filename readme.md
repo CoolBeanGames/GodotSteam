@@ -46,7 +46,7 @@ You can [download pre-compiled versions of this repo here](https://codeberg.org/
 
 Compatibility
 ---
-While rare, sometimes Steamworks SDK updates will break compatilibity with older GodotSteam versions. Any compatability breaks are noted below. Newer API files (dll, so, dylib) _should_ still work for older versions.
+While rare, sometimes Steamworks SDK updates will break compatibility with older GodotSteam versions. Any compatibility breaks are noted below. Newer API files (dll, so, dylib) _should_ still work for older versions.
 
 Steamworks SDK Version | GodotSteam Version
 ---|---
@@ -70,7 +70,7 @@ GodotSteam Version | Broken Compatibility
 4.16 | Variety of small break points, refer to [4.16 changelog for details](https://godotsteam.com/changelog/godot4/#version-416)
 4.17 | Windows projects using Steam SDK 1.63 are meant to work with Proton 11 or Experimental on Linux / Steam Deck.
 4.19 | Lots of changes to Voice functions, refer to [4.19 changelog for details](https://godotsteam.com/changelog/godot4/#version-419)
-4.20 | Godot 4.7 changed callable_method_pointer.h to callable_mp.h which will break backwards compatibilty
+4.20 | Godot 4.7 changed callable_method_pointer.h to callable_mp.h which will break backwards compatibility
 4.21 | ControllerPad enum changed to SteamControllerPad enum, SendMessages added new parameter
 
 
