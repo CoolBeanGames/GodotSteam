@@ -28,7 +28,12 @@
 
 
 #include "godotsteam_multiplayer_peer.h"
+
+#ifdef GDEXTENSION
+#include <godot_cpp/core/math.hpp>
+#else
 #include "core/math/math_funcs.h"
+#endif
 
 
 #define MAX_MESSAGE_COUNT 255
@@ -45,11 +50,27 @@ SteamMultiplayerPeer::~SteamMultiplayerPeer() {
 	close();
 }
 
-void SteamMultiplayerPeer::set_target_peer(int p_peer_id) {
+int SteamMultiplayerPeer::_get_transfer_channel() const {
+	return transfer_channel;
+}
+
+void SteamMultiplayerPeer::_set_transfer_channel(int p_channel) {
+	transfer_channel = p_channel;
+}
+
+MultiplayerPeer::TransferMode SteamMultiplayerPeer::_get_transfer_mode() const {
+	return transfer_mode;
+}
+
+void SteamMultiplayerPeer::_set_transfer_mode(TransferMode p_mode) {
+	transfer_mode = p_mode;
+}
+
+void SteamMultiplayerPeer::_set_target_peer(int p_peer_id) {
 	target_peer = p_peer_id;
 }
 
-int SteamMultiplayerPeer::get_packet_peer() const {
+int SteamMultiplayerPeer::_get_packet_peer() const {
 	ERR_FAIL_COND_V(incoming_packets.is_empty(), 1);
 
 	return SteamAPI_ISteamNetworkingSockets_GetConnectionUserData(
@@ -58,7 +79,7 @@ int SteamMultiplayerPeer::get_packet_peer() const {
 			);
 }
 
-MultiplayerPeer::TransferMode SteamMultiplayerPeer::get_packet_mode() const {
+MultiplayerPeer::TransferMode SteamMultiplayerPeer::_get_packet_mode() const {
 	ERR_FAIL_COND_V(incoming_packets.is_empty(), TRANSFER_MODE_RELIABLE);
 	if (incoming_packets.front()->get()->m_nFlags & k_nSteamNetworkingSend_Reliable) {
 		return TRANSFER_MODE_RELIABLE;
@@ -67,17 +88,17 @@ MultiplayerPeer::TransferMode SteamMultiplayerPeer::get_packet_mode() const {
 	}
 }
 
-int SteamMultiplayerPeer::get_packet_channel() const {
+int SteamMultiplayerPeer::_get_packet_channel() const {
 	ERR_FAIL_COND_V(incoming_packets.is_empty(), 1);
 	return incoming_packets.front()->get()->m_idxLane;
 }
 
-void SteamMultiplayerPeer::disconnect_peer(int p_peer_id, bool p_force) {
+void SteamMultiplayerPeer::_disconnect_peer(int p_peer_id, bool p_force) {
 	// Let godot know our peer disconnected and erase from our maps
 	if (peers.has(p_peer_id)) {
 		steam_connections.erase(peers[p_peer_id]->get_connection_handle());
 		peers[p_peer_id]->disconnect_peer(p_force);
-		emit_signal(SNAME("peer_disconnected"), p_peer_id);
+		emit_signal("peer_disconnected", p_peer_id);
 	}
 
 	// Clean up our local state
@@ -89,15 +110,15 @@ void SteamMultiplayerPeer::disconnect_peer(int p_peer_id, bool p_force) {
 	}
 }
 
-bool SteamMultiplayerPeer::is_server() const {
+bool SteamMultiplayerPeer::_is_server() const {
 	return server;
 }
 
-bool SteamMultiplayerPeer::is_server_relay_supported() const {
+bool SteamMultiplayerPeer::_is_server_relay_supported() const {
 	return server_relay;
 }
 
-void SteamMultiplayerPeer::poll() {
+void SteamMultiplayerPeer::_poll() {
 	SteamNetworkingMessage_t *messages[MAX_MESSAGE_COUNT];
 	int number_messages = SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnPollGroup(
 			SteamAPI_SteamNetworkingSockets_SteamAPI(),
@@ -339,7 +360,7 @@ void SteamMultiplayerPeer::lobby_chat_update(LobbyChatUpdate_t *p_chat_update) {
 		}
 		// Disconnect peers outside the iteration
 		for (int peer_id : peer_ids_to_disconnect) {
-			disconnect_peer(peer_id);
+			disconnect_peer(peer_id, false);
 		}
 		// Remove collected connections outside the iteration
 		for (HSteamNetConnection conn : connections_to_remove) {
@@ -348,11 +369,11 @@ void SteamMultiplayerPeer::lobby_chat_update(LobbyChatUpdate_t *p_chat_update) {
 	}
 }
 
-void SteamMultiplayerPeer::close() {
+void SteamMultiplayerPeer::_close() {
 	connection_status = CONNECTION_DISCONNECTED;
 	server = false;
 
-	if (Engine::get_singleton()->get_singleton_object("Steam") == nullptr) {
+	if (Engine::get_singleton()->has_singleton("Steam")) {
 		return;
 	}
 
@@ -391,16 +412,16 @@ void SteamMultiplayerPeer::close() {
 	}
 }
 
-int SteamMultiplayerPeer::get_unique_id() const {
+int SteamMultiplayerPeer::_get_unique_id() const {
 	return unique_id;
 }
 
 MultiplayerPeer::ConnectionStatus
-SteamMultiplayerPeer::get_connection_status() const {
+SteamMultiplayerPeer::_get_connection_status() const {
 	return connection_status;
 }
 
-int SteamMultiplayerPeer::get_available_packet_count() const {
+int SteamMultiplayerPeer::_get_available_packet_count() const {
 	return incoming_packets.size();
 }
 
@@ -456,7 +477,7 @@ Error SteamMultiplayerPeer::put_packet(const uint8_t *p_buffer, int p_buffer_siz
 	return OK;
 }
 
-int SteamMultiplayerPeer::get_max_packet_size() const {
+int SteamMultiplayerPeer::_get_max_packet_size() const {
 	// Steam networking sockets max message size
 	return k_cbMaxSteamNetworkingSocketsMessageSizeSend; // 512 KB
 }
@@ -562,7 +583,7 @@ void SteamMultiplayerPeer::upgrade_peer(
 		if (connection_status == CONNECTION_CONNECTING) {
 			connection_status = CONNECTION_CONNECTED;
 		}
-		emit_signal(SNAME("peer_connected"), steam_connections[p_connection_handle]->get_peer_id());
+		emit_signal("peer_connected", steam_connections[p_connection_handle]->get_peer_id());
 	}
 }
 
