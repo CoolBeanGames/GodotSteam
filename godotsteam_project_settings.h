@@ -30,7 +30,12 @@
 #define GODOTSTEAM_PROJECT_SETTINGS_H
 
 
+#ifdef GDEXTENSION
+#include <godot_cpp/classes/project_settings.hpp>
+using namespace godot;
+#else
 #include "core/config/project_settings.h"
+#endif
 
 
 class SteamProjectSettings {

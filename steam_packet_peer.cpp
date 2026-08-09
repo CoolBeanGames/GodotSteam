@@ -170,12 +170,12 @@ Error SteamPacketPeer::put_packet(const uint8_t *p_buffer, int p_buffer_size) {
 	return send(0, p_buffer, p_buffer_size, k_nSteamNetworkingSend_Reliable);
 }
 
-int SteamPacketPeer::get_max_packet_size() const {
+int SteamPacketPeer::_get_max_packet_size() const {
 	// Steam networking sockets max message size
 	return k_cbMaxSteamNetworkingSocketsMessageSizeSend; // 512 KB
 }
 
-int SteamPacketPeer::get_available_packet_count() const {
+int SteamPacketPeer::_get_available_packet_count() const {
 	return packet_queue.size();
 }
 

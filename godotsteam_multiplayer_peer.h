@@ -31,18 +31,33 @@
 #define GODOTSTEAM_MULTIPLAYER_PEER_H
 
 
+#ifdef GDEXTENSION
+#include <godot_cpp/classes/multiplayer_peer_extension.hpp>
+#include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/classes/os.hpp>
+#include <godot_cpp/core/ext_wrappers.gen.inc>
+#include <godot_cpp/templates/hash_map.hpp>
+#include <godot_cpp/templates/local_vector.hpp>
+using namespace godot;
+#else
 // Include Godot headers
+#include "core/extension/ext_wrappers.gen.inc"
 #include "core/os/os.h"
 #include "core/object/class_db.h"
 #include "core/templates/hash_map.h"
 #include "scene/main/multiplayer_peer.h"
+#endif
 
 // Include GodotSteam headers
 #include "steam_packet_peer.h"
 
-
+#ifdef GDEXTENSION
+class SteamMultiplayerPeer : public MultiplayerPeerExtension {
+	GDCLASS(SteamMultiplayerPeer, MultiplayerPeerExtension);
+#else
 class SteamMultiplayerPeer : public MultiplayerPeer {
 	GDCLASS(SteamMultiplayerPeer, MultiplayerPeer);
+#endif
 
 
 public:
@@ -60,6 +75,9 @@ private:
 	SteamNetworkingMessage_t *current_packet = nullptr;
 
 	int target_peer = 0;
+	TransferMode transfer_mode = TRANSFER_MODE_RELIABLE;
+	int transfer_channel = 0;
+
 	int unique_id = 0;
 	ConnectionStatus connection_status = CONNECTION_DISCONNECTED;
 	bool server = false;
@@ -90,22 +108,41 @@ public:
 	SteamMultiplayerPeer();
 	~SteamMultiplayerPeer();
 
-	virtual void set_target_peer(int p_peer_id) override;
-	virtual int get_packet_peer() const override;
-	virtual TransferMode get_packet_mode() const override;
-	virtual int get_packet_channel() const override;
-	virtual void disconnect_peer(int p_peer_id, bool p_force = false) override;
-	virtual bool is_server() const override;
-	virtual bool is_server_relay_supported() const override;
-	virtual void poll() override;
-	virtual void close() override;
-	virtual int get_unique_id() const override;
-	virtual ConnectionStatus get_connection_status() const override;
+	MODBIND1(set_target_peer, int);
+	MODBIND0RC(int, get_packet_peer);
+	MODBIND0RC(TransferMode, get_packet_mode);
+	MODBIND0RC(int, get_packet_channel);
+	MODBIND2(disconnect_peer, int, bool);
+	MODBIND0RC(int, get_transfer_channel);
+	MODBIND1(set_transfer_channel, int);
+	MODBIND0RC(TransferMode, get_transfer_mode);
+	MODBIND1(set_transfer_mode, TransferMode);
+	MODBIND0RC(bool, is_server);
+	MODBIND0RC(bool, is_server_relay_supported);
+	MODBIND0(poll);
+	MODBIND0(close);
+	MODBIND0RC(int, get_unique_id);
+	MODBIND0RC(ConnectionStatus, get_connection_status);
 
-	virtual int get_available_packet_count() const override;
+	MODBIND0RC(int, get_available_packet_count);
+	MODBIND0RC(int, get_max_packet_size);
+
+#ifdef GDEXTENSION
+	Error get_packet(const uint8_t **r_buffer, int &r_buffer_size);
+	Error put_packet(const uint8_t *p_buffer, int p_buffer_size);
+	virtual Error _get_packet(const uint8_t **r_buffer, int *r_buffer_size) override {
+		int ret_size = 0;
+		Error err = get_packet(r_buffer, ret_size);
+		*r_buffer_size = ret_size;
+		return err;
+	}
+	virtual Error _put_packet(const uint8_t *p_buffer, int p_buffer_size) override {
+		return put_packet(p_buffer, p_buffer_size);
+	}
+#else
 	virtual Error get_packet(const uint8_t **r_buffer, int &r_buffer_size) override;
 	virtual Error put_packet(const uint8_t *p_buffer, int p_buffer_size) override;
-	virtual int get_max_packet_size() const override;
+#endif
 
 	// Low level functions for more controlled connections
 	Error create_host(int p_virtual_port = 0);

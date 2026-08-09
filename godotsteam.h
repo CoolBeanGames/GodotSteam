@@ -37,7 +37,6 @@
 #pragma warning(disable : 4828)
 #endif
 
-
 // Include INT types header
 #include <inttypes.h>
 
@@ -46,6 +45,20 @@
 #include "steam/steamnetworkingfakeip.h"
 #include "steam/isteamdualsense.h"
 
+#ifdef GDEXTENSION
+// Include Godot-CPP headers
+#include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/classes/os.hpp>
+#include <godot_cpp/classes/project_settings.hpp>
+#include <godot_cpp/classes/rendering_server.hpp>
+#include <godot_cpp/classes/scene_tree.hpp>
+#include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/callable_method_pointer.hpp>
+using namespace godot;
+#else
 // Include Godot headers
 #include "core/config/project_settings.h"
 #include "core/object/callable_mp.h"
@@ -55,13 +68,14 @@
 #include "core/variant/dictionary.h"
 #include "scene/main/scene_tree.h"
 #include "scene/resources/texture.h"
+#endif
 
 // Include GodotSteam headers
 #include "godotsteam_project_settings.h"
 #include "godotsteam_constants.h"
 
 // Include some system headers
-#include "map"
+#include <map>
 
 
 class Steam : public Object,

@@ -28,11 +28,19 @@
 #ifndef STEAM_PACKET_PEER_H
 #define STEAM_PACKET_PEER_H
 
-
+#ifdef GDEXTENSION
+#include <godot_cpp/classes/packet_peer_extension.hpp>
+#include <godot_cpp/classes/packet_peer_extension.hpp>
+#include <godot_cpp/core/ext_wrappers.gen.inc>
+#include <godot_cpp/templates/list.hpp>
+using namespace godot;
+#else
+#include "core/extension/ext_wrappers.gen.inc"
 #include "core/io/packet_peer.h"
 #include "core/templates/list.h"
 #include "core/object/class_db.h"
-#include "scene/main/multiplayer_peer.h"
+#include "core/io/packet_peer.h"
+#endif
 
 // Include Steamworks API headers
 #include "steam/steam_api_flat.h"
@@ -41,8 +49,13 @@
 #include "godotsteam_project_settings.h"
 
 
+#ifdef GDEXTENSION
+class SteamPacketPeer : public PacketPeerExtension {
+	GDCLASS(SteamPacketPeer, PacketPeerExtension);
+#else
 class SteamPacketPeer : public PacketPeer {
 	GDCLASS(SteamPacketPeer, PacketPeer);
+#endif
 
 
 public:
@@ -90,10 +103,25 @@ public:
 	void set_state(PeerState p_state);
 	PeerState get_state() const;
 
-	virtual int get_available_packet_count() const override;
+	MODBIND0RC(int, get_available_packet_count);
+	MODBIND0RC(int, get_max_packet_size);
+
+#ifdef GDEXTENSION
+	Error get_packet(const uint8_t **r_buffer, int &r_buffer_size);
+	Error put_packet(const uint8_t *p_buffer, int p_buffer_size);
+	virtual Error _get_packet(const uint8_t **r_buffer, int *r_buffer_size) override {
+		int ret_size = 0;
+		Error err = get_packet(r_buffer, ret_size);
+		*r_buffer_size = ret_size;
+		return err;
+	}
+	virtual Error _put_packet(const uint8_t *p_buffer, int p_buffer_size) override {
+		return put_packet(p_buffer, p_buffer_size);
+	}
+#else
 	virtual Error get_packet(const uint8_t **r_buffer, int &r_buffer_size) override;
 	virtual Error put_packet(const uint8_t *p_buffer, int p_buffer_size) override;
-	virtual int get_max_packet_size() const override;
+#endif
 
 	Error send(int p_channel, const uint8_t *p_data, int p_size, int p_flags);
 	Error ping(uint32_t p_peer_id);
