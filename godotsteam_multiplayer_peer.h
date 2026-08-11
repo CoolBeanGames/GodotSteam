@@ -42,7 +42,7 @@
 using namespace godot;
 #else
 // Include Godot headers
-#include "core/extension/ext_wrappers.gen.inc"
+#include "core/extension/ext_wrappers.gen.h"
 #include "core/object/class_db.h"
 #include "core/os/os.h"
 #include "core/templates/hash_map.h"
