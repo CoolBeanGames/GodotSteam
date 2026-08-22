@@ -5,7 +5,8 @@
 /*                              GODOTSTEAM                                 */
 /*                         https://godotsteam.com                          */
 /***************************************************************************/
-/* Copyright (c) 2015-Current | GP Garcia and Contributors                 */
+/* Copyright (c) 2015-Current | GP Garcia, Chris Ridenour,                 */
+/*                              and Contributors                           */
 /*                                                                         */
 /* View all contributors at https://godotsteam.com/contribute/contributors */
 /*                                                                         */
@@ -38,6 +39,7 @@
 #endif
 
 #define MAX_MESSAGE_COUNT 255
+
 
 SteamMultiplayerPeer::SteamMultiplayerPeer() :
 		callback_network_connection_status_changed(this,

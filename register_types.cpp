@@ -5,7 +5,8 @@
 /*                              GODOTSTEAM                                 */
 /*                         https://godotsteam.com                          */
 /***************************************************************************/
-/* Copyright (c) 2015-Current | GP Garcia and Contributors                 */
+/* Copyright (c) 2015-Current | GP Garcia, Chris Ridenour,                 */
+/*                              and Contributors                           */
 /*                                                                         */
 /* View all contributors at https://godotsteam.com/contribute/contributors */
 /*                                                                         */
@@ -41,8 +42,8 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
-using namespace godot;
 
+using namespace godot;
 #else
 #include "godotsteam.h"
 #include "godotsteam_multiplayer_peer.h"
@@ -53,6 +54,7 @@ using namespace godot;
 #endif
 
 static Steam *SteamPtr = nullptr;
+
 
 void initialize_godotsteam_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_CORE) {
@@ -76,6 +78,7 @@ void initialize_godotsteam_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {
 		ClassDB::register_class<SteamPacketPeer>();
 		ClassDB::register_class<SteamMultiplayerPeer>();
+
 		if (SteamProjectSettings::get_auto_init() && SteamProjectSettings::get_embed_callbacks()) {
 			WARN_PRINT_ONCE("[STEAM] Cannot use auto-initialization and embed callbacks together currently. Embed callbacks ignored; call run_callbacks() manually.");
 			// This just warns until we can fix the inability to link to SceneTree this early.
@@ -83,6 +86,7 @@ void initialize_godotsteam_module(ModuleInitializationLevel level) {
 		}
 	}
 }
+
 
 void uninitialize_godotsteam_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_CORE) {
@@ -95,6 +99,7 @@ void uninitialize_godotsteam_module(ModuleInitializationLevel level) {
 	}
 }
 
+
 #ifdef GDEXTENSION
 extern "C" {
 GDExtensionBool GDE_EXPORT godotsteam_init(GDExtensionInterfaceGetProcAddress p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
@@ -105,5 +110,4 @@ GDExtensionBool GDE_EXPORT godotsteam_init(GDExtensionInterfaceGetProcAddress p_
 	return init_obj.init();
 }
 }
-
 #endif

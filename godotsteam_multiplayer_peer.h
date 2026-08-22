@@ -5,7 +5,8 @@
 /*                              GODOTSTEAM                                 */
 /*                         https://godotsteam.com                          */
 /***************************************************************************/
-/* Copyright (c) 2015-Current | GP Garcia and Contributors                 */
+/* Copyright (c) 2015-Current | GP Garcia, Chris Ridenour,                 */
+/*                              and Contributors                           */
 /*                                                                         */
 /* View all contributors at https://godotsteam.com/contribute/contributors */
 /*                                                                         */
@@ -31,6 +32,7 @@
 
 #pragma once
 
+// Include Godot headers
 #ifdef GDEXTENSION
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/multiplayer_peer_extension.hpp>
@@ -39,9 +41,9 @@
 #include <godot_cpp/templates/local_vector.hpp>
 
 #include <godot_cpp/core/ext_wrappers.gen.inc>
+
 using namespace godot;
 #else
-// Include Godot headers
 #include "core/extension/ext_wrappers.gen.h"
 #include "core/object/class_db.h"
 #include "core/os/os.h"
@@ -52,6 +54,7 @@ using namespace godot;
 // Include GodotSteam headers
 #include "steam_packet_peer.h"
 
+
 #ifdef GDEXTENSION
 class SteamMultiplayerPeer : public MultiplayerPeerExtension {
 	GDCLASS(SteamMultiplayerPeer, MultiplayerPeerExtension);
@@ -60,12 +63,14 @@ class SteamMultiplayerPeer : public MultiplayerPeer {
 	GDCLASS(SteamMultiplayerPeer, MultiplayerPeer);
 #endif
 
+
 public:
 	enum DebugLevel {
 		DEBUG_LEVEL_NONE,
 		DEBUG_LEVEL_PEER,
 		DEBUG_LEVEL_STEAM,
 	};
+
 
 private:
 	HashMap<uint32_t, Ref<SteamPacketPeer>> peers;
@@ -100,6 +105,7 @@ private:
 	STEAM_CALLBACK(SteamMultiplayerPeer, lobby_chat_update, LobbyChatUpdate_t,
 			callback_lobby_chat_update);
 
+
 public:
 	SteamMultiplayerPeer();
 	~SteamMultiplayerPeer();
@@ -122,6 +128,7 @@ public:
 
 	MODBIND0RC(int, get_available_packet_count);
 	MODBIND0RC(int, get_max_packet_size);
+
 
 #ifdef GDEXTENSION
 	Error get_packet(const uint8_t **r_buffer, int &r_buffer_size);
@@ -163,6 +170,7 @@ public:
 	void set_debug_level(DebugLevel p_debug_level);
 	DebugLevel get_debug_level() const;
 
+
 protected:
 	static void _bind_methods();
 
@@ -173,5 +181,6 @@ protected:
 			SteamPacketPeer::PeerState p_peer_state);
 	void upgrade_peer(HSteamNetConnection p_connection_handle);
 };
+
 
 VARIANT_ENUM_CAST(SteamMultiplayerPeer::DebugLevel)

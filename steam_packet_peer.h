@@ -5,7 +5,8 @@
 /*                              GODOTSTEAM                                 */
 /*                         https://godotsteam.com                          */
 /***************************************************************************/
-/* Copyright (c) 2015-Current | GP Garcia and Contributors                 */
+/* Copyright (c) 2015-Current | GP Garcia, Chris Ridenour,                 */
+/*                              and Contributors                           */
 /*                                                                         */
 /* View all contributors at https://godotsteam.com/contribute/contributors */
 /*                                                                         */
@@ -31,6 +32,7 @@
 
 #pragma once
 
+// Include Godot headers
 #ifdef GDEXTENSION
 #include <godot_cpp/classes/packet_peer_extension.hpp>
 #include <godot_cpp/templates/list.hpp>
@@ -50,6 +52,7 @@ using namespace godot;
 // Include GodotSteam headers
 #include "godotsteam_project_settings.h"
 
+
 #ifdef GDEXTENSION
 class SteamPacketPeer : public PacketPeerExtension {
 	GDCLASS(SteamPacketPeer, PacketPeerExtension);
@@ -57,6 +60,7 @@ class SteamPacketPeer : public PacketPeerExtension {
 class SteamPacketPeer : public PacketPeer {
 	GDCLASS(SteamPacketPeer, PacketPeer);
 #endif
+
 
 public:
 	enum PeerState {
@@ -75,6 +79,7 @@ public:
 		uint32_t peer_id = 0;
 	};
 
+
 private:
 	PeerState state = STATE_NONE;
 	uint64_t steam_id = 0;
@@ -84,6 +89,7 @@ private:
 
 	List<SteamNetworkingMessage_t *> packet_queue;
 	SteamNetworkingMessage_t *last_packet = nullptr;
+
 
 public:
 	SteamPacketPeer();
@@ -129,8 +135,10 @@ public:
 
 	void disconnect_peer(bool p_force = false);
 
+
 protected:
 	static void _bind_methods();
 };
+
 
 VARIANT_ENUM_CAST(SteamPacketPeer::PeerState);

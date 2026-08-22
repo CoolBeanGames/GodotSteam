@@ -5,7 +5,8 @@
 /*                              GODOTSTEAM                                 */
 /*                         https://godotsteam.com                          */
 /***************************************************************************/
-/* Copyright (c) 2015-Current | GP Garcia and Contributors                 */
+/* Copyright (c) 2015-Current | GP Garcia, Chris Ridenour,                 */
+/*                              and Contributors                           */
 /*                                                                         */
 /* View all contributors at https://godotsteam.com/contribute/contributors */
 /*                                                                         */
@@ -58,6 +59,7 @@
 #include <godot_cpp/variant/callable_method_pointer.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/string.hpp>
+
 using namespace godot;
 #else
 // Include Godot headers
@@ -78,6 +80,7 @@ using namespace godot;
 // Include some system headers
 #include <map>
 
+
 class Steam : public Object,
 			  ISteamMatchmakingPingResponse,
 			  ISteamMatchmakingPlayersResponse,
@@ -85,6 +88,7 @@ class Steam : public Object,
 			  ISteamMatchmakingServerFriendsResponse,
 			  ISteamMatchmakingServerListResponse {
 	GDCLASS(Steam, Object);
+
 
 public:
 	static Steam *get_singleton();
@@ -926,9 +930,11 @@ public:
 	// Utils
 	uint32_t current_app_id = 0;
 
+
 protected:
 	static void _bind_methods();
 	static Steam *singleton;
+
 
 private:
 	void run_callbacks();
@@ -936,7 +942,7 @@ private:
 	void start_initialization_verbose(uint32_t app_id = 0, bool embed_callbacks = false);
 
 	// Main
-	String godotsteam_version = "4.21";
+	String godotsteam_version = "4.22";
 	Dictionary init_result;
 	bool is_init_success;
 	bool were_callbacks_embedded;

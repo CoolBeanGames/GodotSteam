@@ -5,7 +5,8 @@
 /*                              GODOTSTEAM                                 */
 /*                         https://godotsteam.com                          */
 /***************************************************************************/
-/* Copyright (c) 2015-Current | GP Garcia and Contributors                 */
+/* Copyright (c) 2015-Current | GP Garcia, Chris Ridenour,                 */
+/*                              and Contributors                           */
 /*                                                                         */
 /* View all contributors at https://godotsteam.com/contribute/contributors */
 /*                                                                         */
@@ -33,12 +34,16 @@
 
 #ifdef GDEXTENSION
 #include <godot_cpp/classes/project_settings.hpp>
+
 using namespace godot;
 #else
 #include "core/config/project_settings.h"
 #endif
 
+
 class SteamProjectSettings {
+
+
 public:
 	static void register_settings();
 
