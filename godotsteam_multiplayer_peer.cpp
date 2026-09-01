@@ -360,7 +360,7 @@ void SteamMultiplayerPeer::_close() {
 	connection_status = CONNECTION_DISCONNECTED;
 	server = false;
 
-	if (Engine::get_singleton()->has_singleton("Steam")) {
+	if (!Engine::get_singleton()->has_singleton("Steam")) {
 		return;
 	}
 
