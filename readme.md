@@ -28,13 +28,11 @@ Current Build
 ---
 You can [download pre-compiled versions of this repo here](https://codeberg.org/godotsteam/godotsteam/releases).
 
-**Version 4.22 Changes**
+**Version 4.22.1 Changes**
 
-- Added: pre-commit static checks, ***thanks to fales***
-- Changed: merged GDExtension branch into Godot 4, ***thanks to fales***
-- Changed: improvements to the build system, ***thanks to fales***
-- Changed: revised small bits of code
-- Removed: automatic API fix for Windows as it will not run due to failing to load
+- Added: link to GodotSteam site in in-editor docs, ***thanks to RTalaro***
+- Fixed: missing ! in singleton check in MultiplayerPeer close function
+
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 

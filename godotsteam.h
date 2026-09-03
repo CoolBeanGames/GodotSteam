@@ -942,7 +942,7 @@ private:
 	void start_initialization_verbose(uint32_t app_id = 0, bool embed_callbacks = false);
 
 	// Main
-	String godotsteam_version = "4.22";
+	String godotsteam_version = "4.22.1";
 	Dictionary init_result;
 	bool is_init_success;
 	bool were_callbacks_embedded;
