@@ -453,7 +453,7 @@ void Steam::run_internal_initialization() {
 }
 
 void Steam::set_internal_callbacks(bool embed_callbacks) {
-	if (!SteamProjectSettings::get_auto_init()) {
+	if (!were_callbacks_embedded) {
 		if (embed_callbacks || SteamProjectSettings::get_embed_callbacks()) {
 			SceneTree *scene_tree = SceneTree::get_singleton();
 			ERR_FAIL_COND_MSG(scene_tree == nullptr, "SceneTree is not present, cannot connect Steam callbacks internally.");
@@ -8933,6 +8933,7 @@ void Steam::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_current_app_id", "new_current_app_id"), &Steam::set_current_app_id);
 	ClassDB::bind_method(D_METHOD("set_current_clan_id", "new_current_clan_id"), &Steam::set_current_clan_id);
 	ClassDB::bind_method(D_METHOD("set_current_steam_id", "new_current_steam_id"), &Steam::set_current_steam_id);
+	ClassDB::bind_method(D_METHOD("set_internal_callbacks", "embed_callbacks"), &Steam::set_internal_callbacks);
 	ClassDB::bind_method(D_METHOD("set_inventory_handle", "new_inventory_handle"), &Steam::set_inventory_handle);
 	ClassDB::bind_method(D_METHOD("set_inventory_update_handle", "new_inventory_update_handle"), &Steam::set_inventory_update_handle);
 	ClassDB::bind_method(D_METHOD("set_leaderboard_details_max", "new_leaderboard_details_max"), &Steam::set_leaderboard_details_max);

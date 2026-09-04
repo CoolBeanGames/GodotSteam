@@ -55,6 +55,10 @@ using namespace godot;
 
 static Steam *SteamPtr = nullptr;
 
+// Protects against potential changes in method name by emitting a compile error,
+// instead of having the deferred call fail at runtime.
+#define GDSTEAM_METHOD_STR(CLASS, METHOD) (&CLASS::METHOD, #METHOD)
+
 
 void initialize_godotsteam_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_CORE) {
@@ -80,9 +84,7 @@ void initialize_godotsteam_module(ModuleInitializationLevel level) {
 		ClassDB::register_class<SteamMultiplayerPeer>();
 
 		if (SteamProjectSettings::get_auto_init() && SteamProjectSettings::get_embed_callbacks()) {
-			WARN_PRINT_ONCE("[STEAM] Cannot use auto-initialization and embed callbacks together currently. Embed callbacks ignored; call run_callbacks() manually.");
-			// This just warns until we can fix the inability to link to SceneTree this early.
-			// Steam::get_singleton()->set_internal_callbacks();
+			Steam::get_singleton()->call_deferred(GDSTEAM_METHOD_STR(Steam, set_internal_callbacks), true);
 		}
 	}
 }
