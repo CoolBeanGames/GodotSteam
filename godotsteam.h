@@ -65,7 +65,7 @@ using namespace godot;
 // Include Godot headers
 #include "core/config/project_settings.h"
 #include "core/version.h"
-#if VERSION_MAJOR == 4 && VERSION_MINOR < 6
+#if VERSION_MAJOR == 4 && VERSION_MINOR < 7
 #include "core/object/callable_method_pointer.h"
 #else
 #include "core/object/callable_mp.h"
