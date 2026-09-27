@@ -64,7 +64,12 @@ using namespace godot;
 #else
 // Include Godot headers
 #include "core/config/project_settings.h"
+#include "core/version.h"
+#if VERSION_MAJOR == 4 && VERSION_MINOR < 7
+#include "core/object/callable_method_pointer.h"
+#else
 #include "core/object/callable_mp.h"
+#endif
 #include "core/object/class_db.h"
 #include "core/object/object.h"
 #include "core/os/os.h"
@@ -80,7 +85,6 @@ using namespace godot;
 // Include some system headers
 #include <map>
 
-
 class Steam : public Object,
 			  ISteamMatchmakingPingResponse,
 			  ISteamMatchmakingPlayersResponse,
@@ -88,7 +92,6 @@ class Steam : public Object,
 			  ISteamMatchmakingServerFriendsResponse,
 			  ISteamMatchmakingServerListResponse {
 	GDCLASS(Steam, Object);
-
 
 public:
 	static Steam *get_singleton();
@@ -930,11 +933,9 @@ public:
 	// Utils
 	uint32_t current_app_id = 0;
 
-
 protected:
 	static void _bind_methods();
 	static Steam *singleton;
-
 
 private:
 	void run_callbacks();

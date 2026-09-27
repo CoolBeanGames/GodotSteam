@@ -44,7 +44,10 @@
 
 using namespace godot;
 #else
+#include "core/version.h"
+#if VERSION_MAJOR == 4 && VERSION_MINOR > 6
 #include "core/extension/ext_wrappers.gen.h"
+#endif
 #include "core/object/class_db.h"
 #include "core/os/os.h"
 #include "core/templates/hash_map.h"
