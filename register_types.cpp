@@ -55,10 +55,6 @@ using namespace godot;
 
 static Steam *SteamPtr = nullptr;
 
-// Protects against potential changes in method name by emitting a compile error,
-// instead of having the deferred call fail at runtime.
-#define GDSTEAM_METHOD_STR(CLASS, METHOD) (&CLASS::METHOD, #METHOD)
-
 
 void initialize_godotsteam_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_CORE) {
@@ -77,14 +73,17 @@ void initialize_godotsteam_module(ModuleInitializationLevel level) {
 		if (!SteamProjectSettings::get_auto_init()) {
 			return;
 		}
-		Steam::get_singleton()->run_internal_initialization();
+		SteamPtr->steamInitEx();
 	}
 	if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {
 		ClassDB::register_class<SteamPacketPeer>();
 		ClassDB::register_class<SteamMultiplayerPeer>();
 
 		if (SteamProjectSettings::get_auto_init() && SteamProjectSettings::get_embed_callbacks()) {
-			Steam::get_singleton()->call_deferred(GDSTEAM_METHOD_STR(Steam, set_internal_callbacks), true);
+			if (Engine::get_singleton()->is_editor_hint()) {
+				return;
+			}
+			callable_mp_static(&Steam::static_run_callbacks).call_deferred();
 		}
 	}
 }

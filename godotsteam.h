@@ -98,6 +98,8 @@ public:
 	Steam();
 	~Steam();
 
+	static void static_run_callbacks();
+
 #include "godotsteam_enums.h"
 
 	// STEAMWORKS FUNCTIONS
@@ -114,6 +116,7 @@ public:
 	bool isSteamRunning();
 	void releaseCurrentThreadMemory();
 	bool restartAppIfNecessary(uint32_t app_id);
+	void run_callbacks();
 	bool steamInit(uint32_t app_id = 0, bool embed_callbacks = false);
 	Dictionary steamInitEx(uint32_t app_id = 0, bool embed_callbacks = false);
 	void steamShutdown();
@@ -136,7 +139,6 @@ public:
 	void set_current_app_id(uint32_t new_current_app_id) { current_app_id = new_current_app_id; }
 	void set_current_clan_id(uint64_t new_current_clan_id) { current_clan_id = new_current_clan_id; }
 	void set_current_steam_id(uint64_t new_current_steam_id) { current_steam_id = new_current_steam_id; }
-	void set_internal_callbacks(bool embed_callbacks);
 	void set_inventory_handle(int32 new_inventory_handle) { inventory_handle = new_inventory_handle; }
 	void set_inventory_update_handle(uint64_t new_inventory_update_handle) { inventory_update_handle = new_inventory_update_handle; }
 	void set_leaderboard_details_max(int new_leaderboard_details_max) {
@@ -911,6 +913,8 @@ public:
 	Dictionary isBroadcasting();
 
 	// PROPERTIES
+	bool were_callbacks_embedded;
+
 	// Friends
 	uint64_t current_clan_id = 0;
 
@@ -938,15 +942,10 @@ protected:
 	static Steam *singleton;
 
 private:
-	void run_callbacks();
-	void run_internal_callbacks();
-	void start_initialization_verbose(uint32_t app_id = 0, bool embed_callbacks = false);
-
 	// Main
 	String godotsteam_version = "4.22.1";
 	Dictionary init_result;
 	bool is_init_success;
-	bool were_callbacks_embedded;
 
 	const SteamNetworkingConfigValue_t *convert_config_options(Dictionary config_options);
 	CSteamID createSteamID(uint64_t steam_id, AccountType account_type = AccountType(-1));
