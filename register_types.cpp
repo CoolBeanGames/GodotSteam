@@ -73,7 +73,7 @@ void initialize_godotsteam_module(ModuleInitializationLevel level) {
 		if (!SteamProjectSettings::get_auto_init()) {
 			return;
 		}
-		SteamPtr->steamInitEx();
+		Steam::get_singleton()->run_internal_initialization();
 	}
 	if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {
 		ClassDB::register_class<SteamPacketPeer>();

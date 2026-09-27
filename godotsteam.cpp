@@ -462,6 +462,8 @@ void Steam::static_run_callbacks() {
 
 // Initialize the SDK, without worrying about the cause of failure.
 bool Steam::steamInit(uint32_t app_id, bool embed_callbacks) {
+	ERR_FAIL_COND_V_MSG(is_init_success, true, "Steam is already initialized.");
+
 	if (app_id == 0) {
 		app_id = SteamProjectSettings::get_id_in_use();
 	}
@@ -488,6 +490,16 @@ bool Steam::steamInit(uint32_t app_id, bool embed_callbacks) {
 Dictionary Steam::steamInitEx(uint32_t app_id, bool embed_callbacks) {
 	ERR_FAIL_COND_V_MSG(is_init_success, init_result, "Steam is already initialized.");
 
+	run_internal_initialization(app_id);
+
+	if (is_init_success) {
+		set_callbacks_connected(embed_callbacks);
+	}
+	
+	return init_result;
+}
+
+void Steam::run_internal_initialization(uint32_t app_id) {
 	if (app_id == 0) {
 		app_id = SteamProjectSettings::get_id_in_use();
 	}
@@ -506,12 +518,9 @@ Dictionary Steam::steamInitEx(uint32_t app_id, bool embed_callbacks) {
 		is_init_success = true;
 		current_app_id = app_id;
 		current_steam_id = SteamAPI_ISteamUser_GetSteamID(SteamAPI_SteamUser());
-
-		set_callbacks_connected(embed_callbacks);
 	}
 	init_result["status"] = initialize_result;
 	init_result["verbal"] = error_message;
-	return init_result;
 }
 
 // Shuts down the Steamworks API, releases pointers and frees memory.

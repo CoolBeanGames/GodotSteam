@@ -134,7 +134,7 @@ public:
 	uint64_t get_leaderboard_ugc_handle() const { return leaderboard_ugc_handle; }
 	uint64_t get_server_list_request() const { return (uint64)server_list_request; }
 	Dictionary get_steam_init_result() { return init_result; }
-	void run_internal_initialization();
+	void run_internal_initialization(uint32_t app_id = 0);
 	void set_browser_handle(uint32_t new_browser_handle) { current_browser_handle = new_browser_handle; }
 	void set_current_app_id(uint32_t new_current_app_id) { current_app_id = new_current_app_id; }
 	void set_current_clan_id(uint64_t new_current_clan_id) { current_clan_id = new_current_clan_id; }
