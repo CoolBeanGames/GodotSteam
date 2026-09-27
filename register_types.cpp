@@ -83,7 +83,7 @@ void initialize_godotsteam_module(ModuleInitializationLevel level) {
 			if (Engine::get_singleton()->is_editor_hint()) {
 				return;
 			}
-			callable_mp_static(&Steam::static_run_callbacks).call_deferred();
+			callable_mp_static(&Steam::static_connect_callbacks).call_deferred();
 		}
 	}
 }

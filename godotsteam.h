@@ -98,7 +98,7 @@ public:
 	Steam();
 	~Steam();
 
-	static void static_run_callbacks();
+	static void static_connect_callbacks();
 
 #include "godotsteam_enums.h"
 
@@ -116,7 +116,6 @@ public:
 	bool isSteamRunning();
 	void releaseCurrentThreadMemory();
 	bool restartAppIfNecessary(uint32_t app_id);
-	void run_callbacks();
 	bool steamInit(uint32_t app_id = 0, bool embed_callbacks = false);
 	Dictionary steamInitEx(uint32_t app_id = 0, bool embed_callbacks = false);
 	void steamShutdown();
@@ -913,8 +912,6 @@ public:
 	Dictionary isBroadcasting();
 
 	// PROPERTIES
-	bool were_callbacks_embedded;
-
 	// Friends
 	uint64_t current_clan_id = 0;
 
@@ -942,10 +939,15 @@ protected:
 	static Steam *singleton;
 
 private:
+	void run_callbacks();
+	void set_callbacks_connected(bool embed_callbacks);
+	void set_callbacks_disconnected();
+
 	// Main
 	String godotsteam_version = "4.22.1";
 	Dictionary init_result;
 	bool is_init_success;
+	bool were_callbacks_embedded;
 
 	const SteamNetworkingConfigValue_t *convert_config_options(Dictionary config_options);
 	CSteamID createSteamID(uint64_t steam_id, AccountType account_type = AccountType(-1));
