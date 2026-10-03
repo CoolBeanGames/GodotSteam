@@ -436,7 +436,7 @@ void Steam::run_callbacks() {
 
 void Steam::set_callbacks_connected(bool embed_callbacks = false) {
 	if (!were_callbacks_embedded) {
-		if (embed_callbacks || SteamProjectSettings::get_embed_callbacks()) {
+		if (embed_callbacks || SteamProjectSettings::get_embed_callbacks() && !SteamProjectSettings::get_auto_init()) {
 			SceneTree *scene_tree = SceneTree::get_singleton();
 			ERR_FAIL_COND_MSG(scene_tree == nullptr, "SceneTree is not present, cannot connect Steam callbacks internally.");
 			scene_tree->connect("process_frame", callable_mp(Steam::get_singleton(), &Steam::run_callbacks));
@@ -457,7 +457,7 @@ void Steam::set_callbacks_disconnected() {
 }
 
 void Steam::static_connect_callbacks() {
-	get_singleton()->set_callbacks_connected();
+	get_singleton()->set_callbacks_connected(true);
 }
 
 // Initialize the SDK, without worrying about the cause of failure.
@@ -490,16 +490,6 @@ bool Steam::steamInit(uint32_t app_id, bool embed_callbacks) {
 Dictionary Steam::steamInitEx(uint32_t app_id, bool embed_callbacks) {
 	ERR_FAIL_COND_V_MSG(is_init_success, init_result, "Steam is already initialized.");
 
-	run_internal_initialization(app_id);
-
-	if (is_init_success) {
-		set_callbacks_connected(embed_callbacks);
-	}
-	
-	return init_result;
-}
-
-void Steam::run_internal_initialization(uint32_t app_id) {
 	if (app_id == 0) {
 		app_id = SteamProjectSettings::get_id_in_use();
 	}
@@ -518,9 +508,12 @@ void Steam::run_internal_initialization(uint32_t app_id) {
 		is_init_success = true;
 		current_app_id = app_id;
 		current_steam_id = SteamAPI_ISteamUser_GetSteamID(SteamAPI_SteamUser());
+
+		set_callbacks_connected(embed_callbacks);
 	}
 	init_result["status"] = initialize_result;
 	init_result["verbal"] = error_message;
+	return init_result;
 }
 
 // Shuts down the Steamworks API, releases pointers and frees memory.
