@@ -33,10 +33,6 @@
 #include "register_types.h"
 
 #ifdef GDEXTENSION
-#include "godotsteam.h"
-#include "godotsteam_multiplayer_peer.h"
-#include "godotsteam_project_settings.h"
-
 #include <gdextension_interface.h>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/core/class_db.hpp>
@@ -45,45 +41,52 @@
 
 using namespace godot;
 #else
-#include "godotsteam.h"
-#include "godotsteam_multiplayer_peer.h"
-#include "godotsteam_project_settings.h"
-
 #include "core/config/engine.h"
 #include "core/object/class_db.h"
 #endif
 
+#include "godotsteam_project_settings.h"
+#include "godotsteam.h"
+#include "godotsteam_multiplayer_peer.h"
+
+
 static Steam *SteamPtr = nullptr;
+static SteamProjectSettings *SteamProjectSettingsPtr = nullptr;
 
 
 void initialize_godotsteam_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_CORE) {
-		ClassDB::register_class<Steam>();
+		GDREGISTER_CLASS(Steam);
+		GDREGISTER_CLASS(SteamProjectSettings);
 		SteamPtr = memnew(Steam);
+		SteamProjectSettingsPtr = memnew(SteamProjectSettings);
 #ifdef GDEXTENSION
-		Engine::get_singleton()->register_singleton("Steam", Steam::get_singleton());
+		Engine::get_singleton()->register_singleton("Steam", SteamPtr);
+		Engine::get_singleton()->register_singleton("SteamProjectSettings", SteamProjectSettingsPtr);
 #else
-		Engine::get_singleton()->add_singleton(Engine::Singleton("Steam", Steam::get_singleton()));
+		Engine::get_singleton()->add_singleton(Engine::Singleton("Steam", SteamPtr));
+		Engine::get_singleton()->add_singleton(Engine::Singleton("SteamProjectSettings", SteamProjectSettingsPtr));
 #endif
-		// Setup Project Settings
-		SteamProjectSettings::register_settings();
+		SteamProjectSettingsPtr->register_settings();
+
 		if (Engine::get_singleton()->is_editor_hint()) {
 			return;
 		}
-		if (!SteamProjectSettings::get_auto_init()) {
+		if (!SteamProjectSettingsPtr->get_auto_init()) {
 			return;
 		}
 		SteamPtr->steamInitEx();
 	}
-	if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {
-		ClassDB::register_class<SteamPacketPeer>();
-		ClassDB::register_class<SteamMultiplayerPeer>();
 
-		if (SteamProjectSettings::get_auto_init() && SteamProjectSettings::get_embed_callbacks()) {
-			if (Engine::get_singleton()->is_editor_hint()) {
+	if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {
+		GDREGISTER_CLASS(SteamPacketPeer);
+		GDREGISTER_CLASS(SteamMultiplayerPeer);
+
+		if (SteamProjectSettingsPtr->get_auto_init() && SteamProjectSettingsPtr->get_embed_callbacks()) {
+		 	if (Engine::get_singleton()->is_editor_hint()) {
 				return;
 			}
-			callable_mp_static(&Steam::static_connect_callbacks).call_deferred();
+			callable_mp_static(&Steam::static_embed_callbacks).call_deferred();
 		}
 	}
 }
@@ -93,10 +96,15 @@ void uninitialize_godotsteam_module(ModuleInitializationLevel level) {
 	if (level == MODULE_INITIALIZATION_LEVEL_CORE) {
 #ifdef GDEXTENSION
 		Engine::get_singleton()->unregister_singleton("Steam");
+		Engine::get_singleton()->unregister_singleton("SteamProjectSettings");
 #else
 		Engine::get_singleton()->remove_singleton("Steam");
+		Engine::get_singleton()->remove_singleton("SteamProjectSettings");
 #endif
 		memdelete(SteamPtr);
+		memdelete(SteamProjectSettingsPtr);
+		SteamPtr = nullptr;
+		SteamProjectSettingsPtr = nullptr;
 	}
 }
 

@@ -40,6 +40,7 @@
 #define STARTUP_INIT_SETTING "steam/initialization/processes/initialize_on_startup"
 #define EMBED_CALLBACKS_SETTING "steam/initialization/processes/embed_callbacks"
 #define MAX_CHANNELS_SETTING "steam/multiplayer_peer/max_channels"
+#define ENABLE_DEBUG_SETTING "steam/settings/enable_debug"
 
 #define OLD_APP_ID_SETTING "steam/initialization/app_id"
 #define OLD_STARTUP_INIT_SETTING "steam/initialization/initialize_on_startup"
@@ -49,6 +50,98 @@
 #define GLOBAL_GET(m_prop) ProjectSettings::get_singleton()->get_setting_with_override(m_prop)
 #endif
 
+
+SteamProjectSettings *SteamProjectSettings::singleton = nullptr;
+
+SteamProjectSettings::SteamProjectSettings() {
+	singleton = this;
+}
+
+SteamProjectSettings::~SteamProjectSettings() {
+	singleton = nullptr;
+}
+
+
+void SteamProjectSettings::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_app_id"), &SteamProjectSettings::get_app_id);
+	ClassDB::bind_method(D_METHOD("get_app_type"), &SteamProjectSettings::get_app_type);
+	ClassDB::bind_method(D_METHOD("get_auto_init"), &SteamProjectSettings::get_auto_init);
+	ClassDB::bind_method(D_METHOD("get_demo_id"), &SteamProjectSettings::get_demo_id);
+	ClassDB::bind_method(D_METHOD("get_embed_callbacks"), &SteamProjectSettings::get_embed_callbacks);
+	ClassDB::bind_method(D_METHOD("get_enable_debug"), &SteamProjectSettings::get_enable_debug);
+	ClassDB::bind_method(D_METHOD("get_id_in_use"), &SteamProjectSettings::get_id_in_use);
+	ClassDB::bind_method(D_METHOD("get_max_channels"), &SteamProjectSettings::get_max_channels);
+	ClassDB::bind_method(D_METHOD("get_playtest_id"), &SteamProjectSettings::get_playtest_id);
+	ClassDB::bind_method(D_METHOD("get_tool_id"), &SteamProjectSettings::get_tool_id);
+	ClassDB::bind_method(D_METHOD("set_app_id", "new_app_id"), &SteamProjectSettings::set_app_id);
+	ClassDB::bind_method(D_METHOD("set_app_type", "new_app_type"), &SteamProjectSettings::set_app_type);
+	ClassDB::bind_method(D_METHOD("set_auto_init", "is_auto_init"), &SteamProjectSettings::set_auto_init);
+	ClassDB::bind_method(D_METHOD("set_demo_id", "new_demo_id"), &SteamProjectSettings::set_demo_id);
+	ClassDB::bind_method(D_METHOD("set_embed_callbacks", "is_embed_callbacks"), &SteamProjectSettings::set_embed_callbacks);
+	ClassDB::bind_method(D_METHOD("set_enable_debug", "is_debug_enabled"), &SteamProjectSettings::set_enable_debug);
+	ClassDB::bind_method(D_METHOD("set_max_channels", "new_max_channels"), &SteamProjectSettings::set_max_channels);
+	ClassDB::bind_method(D_METHOD("set_playtest_id", "new_playtest_id"), &SteamProjectSettings::set_playtest_id);
+	ClassDB::bind_method(D_METHOD("set_tool_id", "new_tool_id"), &SteamProjectSettings::set_tool_id);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "app_id"), "set_app_id", "get_app_id");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "app_type"), "set_app_type", "get_app_type");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "auto_init"), "set_auto_init", "get_auto_init");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "demo_id"), "set_demo_id", "get_demo_id");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "embed_callbacks"), "set_embed_callbacks", "get_embed_callbacks");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enable_debug"), "set_enable_debug", "get_enable_debug");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "max_channels"), "set_max_channels", "get_max_channels");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "playtest_id"), "set_playtest_id", "get_playtest_id");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "tool_id"), "set_tool_id", "get_tool_id");
+}
+
+
+int SteamProjectSettings::get_app_id() {
+	return GLOBAL_GET(APP_ID_SETTING);
+}
+
+int SteamProjectSettings::get_app_type() {
+	return GLOBAL_GET(APP_TYPE_SETTING);
+}
+
+bool SteamProjectSettings::get_auto_init() {
+	return GLOBAL_GET(STARTUP_INIT_SETTING);
+}
+
+int SteamProjectSettings::get_demo_id() {
+	return GLOBAL_GET(DEMO_ID_SETTING);
+}
+
+bool SteamProjectSettings::get_embed_callbacks() {
+	return GLOBAL_GET(EMBED_CALLBACKS_SETTING);
+}
+
+bool SteamProjectSettings::get_enable_debug() {
+	return GLOBAL_GET(ENABLE_DEBUG_SETTING);
+}
+
+int SteamProjectSettings::get_id_in_use() {
+	if (get_app_type() == 1) {
+		return get_demo_id();
+	} else if (get_app_type() == 2) {
+		return get_playtest_id();
+	} else if (get_app_type() == 3) {
+		return get_tool_id();
+	} else {
+		return get_app_id();
+	}
+}
+
+int SteamProjectSettings::get_max_channels() {
+	return GLOBAL_GET(MAX_CHANNELS_SETTING);
+}
+
+int SteamProjectSettings::get_playtest_id() {
+	return GLOBAL_GET(PLAYTEST_ID_SETTING);
+}
+
+int SteamProjectSettings::get_tool_id() {
+	return GLOBAL_GET(TOOL_ID_SETTING);
+}
 
 void SteamProjectSettings::register_settings() {
 	// Set up our app types and their IDs
@@ -112,6 +205,14 @@ void SteamProjectSettings::register_settings() {
 	}
 	ProjectSettings::get_singleton()->set_initial_value(MAX_CHANNELS_SETTING, 4);
 	ProjectSettings::get_singleton()->set_as_basic(MAX_CHANNELS_SETTING, true);
+
+	// Set up some other settings
+	if (!ProjectSettings::get_singleton()->has_setting(ENABLE_DEBUG_SETTING)) {
+		ProjectSettings::get_singleton()->set(ENABLE_DEBUG_SETTING, false);
+	}
+	ProjectSettings::get_singleton()->set_initial_value(ENABLE_DEBUG_SETTING, false);
+	ProjectSettings::get_singleton()->set_as_basic(ENABLE_DEBUG_SETTING, true);
+
 	// Port in any pre-GodotSteam v4.20 settings
 	if (ProjectSettings::get_singleton()->has_setting(OLD_APP_ID_SETTING)) {
 		WARN_PRINT_ONCE("Found older app ID project setting, converting it");
@@ -130,46 +231,38 @@ void SteamProjectSettings::register_settings() {
 	}
 }
 
-int SteamProjectSettings::get_app_id() {
-	return GLOBAL_GET(APP_ID_SETTING);
+void SteamProjectSettings::set_app_id(int new_app_id) {
+	ProjectSettings::get_singleton()->set_setting(APP_ID_SETTING, new_app_id);
 }
 
-int SteamProjectSettings::get_app_type() {
-	return GLOBAL_GET(APP_TYPE_SETTING);
+void SteamProjectSettings::set_app_type(int new_app_type) {
+	ProjectSettings::get_singleton()->set_setting(APP_TYPE_SETTING, new_app_type);
 }
 
-bool SteamProjectSettings::get_auto_init() {
-	return GLOBAL_GET(STARTUP_INIT_SETTING);
+void SteamProjectSettings::set_auto_init(bool is_auto_init) {
+	ProjectSettings::get_singleton()->set_setting(STARTUP_INIT_SETTING, is_auto_init);
 }
 
-int SteamProjectSettings::get_demo_id() {
-	return GLOBAL_GET(DEMO_ID_SETTING);
+void SteamProjectSettings::set_demo_id(int new_demo_id) {
+	ProjectSettings::get_singleton()->set_setting(DEMO_ID_SETTING, new_demo_id);
 }
 
-bool SteamProjectSettings::get_embed_callbacks() {
-	return GLOBAL_GET(EMBED_CALLBACKS_SETTING);
+void SteamProjectSettings::set_embed_callbacks(bool is_embed_callbacks) {
+	ProjectSettings::get_singleton()->set_setting(EMBED_CALLBACKS_SETTING, is_embed_callbacks);
 }
 
-int SteamProjectSettings::get_id_in_use() {
-	if (get_app_type() == 1) {
-		return get_demo_id();
-	} else if (get_app_type() == 2) {
-		return get_playtest_id();
-	} else if (get_app_type() == 3) {
-		return get_tool_id();
-	} else {
-		return get_app_id();
-	}
+void SteamProjectSettings::set_enable_debug(bool is_debug_enabled) {
+	ProjectSettings::get_singleton()->set_setting(ENABLE_DEBUG_SETTING, is_debug_enabled);
 }
 
-int SteamProjectSettings::get_max_channels() {
-	return GLOBAL_GET(MAX_CHANNELS_SETTING);
+void SteamProjectSettings::set_max_channels(int new_max_channels) {
+	ProjectSettings::get_singleton()->set_setting(MAX_CHANNELS_SETTING, new_max_channels);
 }
 
-int SteamProjectSettings::get_playtest_id() {
-	return GLOBAL_GET(PLAYTEST_ID_SETTING);
+void SteamProjectSettings::set_playtest_id(int new_playtest_id) {
+	ProjectSettings::get_singleton()->set_setting(PLAYTEST_ID_SETTING, new_playtest_id);
 }
 
-int SteamProjectSettings::get_tool_id() {
-	return GLOBAL_GET(TOOL_ID_SETTING);
+void SteamProjectSettings::set_tool_id(int new_tool_id) {
+	ProjectSettings::get_singleton()->set_setting(TOOL_ID_SETTING, new_tool_id);
 }

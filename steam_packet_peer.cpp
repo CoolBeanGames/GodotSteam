@@ -39,7 +39,7 @@ SteamPacketPeer::SteamPacketPeer() {
 	connection_handle = k_HSteamNetConnection_Invalid;
 	peer_id = 0;
 	last_packet = nullptr;
-	configured_lanes = SteamProjectSettings::get_max_channels();
+	configured_lanes = SteamProjectSettings::get_singleton()->get_max_channels();
 }
 
 SteamPacketPeer::~SteamPacketPeer() {

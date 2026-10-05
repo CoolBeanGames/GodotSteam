@@ -85,6 +85,7 @@ using namespace godot;
 // Include some system headers
 #include <map>
 
+
 class Steam : public Object,
 			  ISteamMatchmakingPingResponse,
 			  ISteamMatchmakingPlayersResponse,
@@ -93,12 +94,13 @@ class Steam : public Object,
 			  ISteamMatchmakingServerListResponse {
 	GDCLASS(Steam, Object);
 
+
 public:
-	static Steam *get_singleton();
+	static Steam *get_singleton() { return singleton; };
 	Steam();
 	~Steam();
 
-	static void static_connect_callbacks();
+	static void static_embed_callbacks();
 
 #include "godotsteam_enums.h"
 
@@ -116,6 +118,7 @@ public:
 	bool isSteamRunning();
 	void releaseCurrentThreadMemory();
 	bool restartAppIfNecessary(uint32_t app_id);
+	void run_callbacks();
 	bool steamInit(uint32_t app_id = 0, bool embed_callbacks = false);
 	Dictionary steamInitEx(uint32_t app_id = 0, bool embed_callbacks = false);
 	void steamShutdown();
@@ -133,6 +136,7 @@ public:
 	uint64_t get_leaderboard_ugc_handle() const { return leaderboard_ugc_handle; }
 	uint64_t get_server_list_request() const { return (uint64)server_list_request; }
 	Dictionary get_steam_init_result() { return init_result; }
+	void run_internal_initialization();
 	void set_browser_handle(uint32_t new_browser_handle) { current_browser_handle = new_browser_handle; }
 	void set_current_app_id(uint32_t new_current_app_id) { current_app_id = new_current_app_id; }
 	void set_current_clan_id(uint64_t new_current_clan_id) { current_clan_id = new_current_clan_id; }
@@ -911,6 +915,8 @@ public:
 	Dictionary isBroadcasting();
 
 	// PROPERTIES
+	bool were_callbacks_embedded = false;
+
 	// Friends
 	uint64_t current_clan_id = 0;
 
@@ -933,20 +939,17 @@ public:
 	// Utils
 	uint32_t current_app_id = 0;
 
+
 protected:
 	static void _bind_methods();
 	static Steam *singleton;
 
-private:
-	void run_callbacks();
-	void set_callbacks_connected(bool embed_callbacks);
-	void set_callbacks_disconnected();
 
+private:
 	// Main
-	String godotsteam_version = "4.22.1";
+	String godotsteam_version = "4.23";
 	Dictionary init_result;
 	bool is_init_success;
-	bool were_callbacks_embedded;
 
 	const SteamNetworkingConfigValue_t *convert_config_options(Dictionary config_options);
 	CSteamID createSteamID(uint64_t steam_id, AccountType account_type = AccountType(-1));
@@ -958,6 +961,9 @@ private:
 	SteamNetworkingIPAddr getSteamIPFromString(String ip_string);
 	String getStringFromIP(uint32_t ip_address);
 	String getStringFromSteamIP(SteamNetworkingIPAddr this_address);
+	void run_embedded_callbacks();
+	void set_callbacks_connected(bool embed_callbacks = false);
+	void set_callbacks_disconnected();
 
 	// Matchmaking Servers
 	HServerListRequest server_list_request = 0;

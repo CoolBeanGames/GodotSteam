@@ -40,6 +40,7 @@
 
 #define MAX_MESSAGE_COUNT 255
 
+
 SteamMultiplayerPeer::SteamMultiplayerPeer() :
 		callback_network_connection_status_changed(this,
 				&SteamMultiplayerPeer::network_connection_status_changed),
