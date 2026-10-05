@@ -73,16 +73,17 @@ void initialize_godotsteam_module(ModuleInitializationLevel level) {
 		if (!SteamProjectSettings::get_auto_init()) {
 			return;
 		}
-		Steam::get_singleton()->run_internal_initialization();
+		SteamPtr->steamInitEx();
 	}
 	if (level == MODULE_INITIALIZATION_LEVEL_SCENE) {
 		ClassDB::register_class<SteamPacketPeer>();
 		ClassDB::register_class<SteamMultiplayerPeer>();
 
 		if (SteamProjectSettings::get_auto_init() && SteamProjectSettings::get_embed_callbacks()) {
-			WARN_PRINT_ONCE("[STEAM] Cannot use auto-initialization and embed callbacks together currently. Embed callbacks ignored; call run_callbacks() manually.");
-			// This just warns until we can fix the inability to link to SceneTree this early.
-			// Steam::get_singleton()->set_internal_callbacks();
+			if (Engine::get_singleton()->is_editor_hint()) {
+				return;
+			}
+			callable_mp_static(&Steam::static_connect_callbacks).call_deferred();
 		}
 	}
 }

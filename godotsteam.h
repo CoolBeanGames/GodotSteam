@@ -98,6 +98,8 @@ public:
 	Steam();
 	~Steam();
 
+	static void static_connect_callbacks();
+
 #include "godotsteam_enums.h"
 
 	// STEAMWORKS FUNCTIONS
@@ -131,12 +133,10 @@ public:
 	uint64_t get_leaderboard_ugc_handle() const { return leaderboard_ugc_handle; }
 	uint64_t get_server_list_request() const { return (uint64)server_list_request; }
 	Dictionary get_steam_init_result() { return init_result; }
-	void run_internal_initialization();
 	void set_browser_handle(uint32_t new_browser_handle) { current_browser_handle = new_browser_handle; }
 	void set_current_app_id(uint32_t new_current_app_id) { current_app_id = new_current_app_id; }
 	void set_current_clan_id(uint64_t new_current_clan_id) { current_clan_id = new_current_clan_id; }
 	void set_current_steam_id(uint64_t new_current_steam_id) { current_steam_id = new_current_steam_id; }
-	void set_internal_callbacks(bool embed_callbacks);
 	void set_inventory_handle(int32 new_inventory_handle) { inventory_handle = new_inventory_handle; }
 	void set_inventory_update_handle(uint64_t new_inventory_update_handle) { inventory_update_handle = new_inventory_update_handle; }
 	void set_leaderboard_details_max(int new_leaderboard_details_max) {
@@ -939,8 +939,8 @@ protected:
 
 private:
 	void run_callbacks();
-	void run_internal_callbacks();
-	void start_initialization_verbose(uint32_t app_id = 0, bool embed_callbacks = false);
+	void set_callbacks_connected(bool embed_callbacks);
+	void set_callbacks_disconnected();
 
 	// Main
 	String godotsteam_version = "4.22.1";
