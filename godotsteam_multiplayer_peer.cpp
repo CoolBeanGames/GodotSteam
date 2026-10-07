@@ -364,6 +364,12 @@ void SteamMultiplayerPeer::_close() {
 		return;
 	}
 
+	// To prevent the steam callback from keeping this object from getting destroyed indefinitely, 
+	// and prevent calls to ghosts of old closed multiplayerpeer instances, explicitly unbind from
+	// the Steam API callbacks.
+	callback_network_connection_status_changed.Unregister();
+	callback_lobby_chat_update.Unregister();
+
 	for (KeyValue<HSteamNetConnection, Ref<SteamPacketPeer>> &E :
 			steam_connections) {
 		E.value->disconnect_peer(true);
