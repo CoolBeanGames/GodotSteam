@@ -30,7 +30,7 @@ You can [download pre-compiled versions of this repo here](https://codeberg.org/
 
 **Version 4.23.1 Changes**
 
-- Changed: overhauled GDExtension updater
+- Changed: overhauled GDExtension updater, inspired by ***Maaack***
 
 [You can read more change-logs here](https://godotsteam.com/changelog/godot4/).
 
